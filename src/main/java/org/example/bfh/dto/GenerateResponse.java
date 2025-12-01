@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class GenerateResponse {
     private String webhook;
     private String accessToken;
-    private String questionUrl; // if server returns it; otherwise may be null
+    private String questionUrl;
 
     public GenerateResponse() {}
 

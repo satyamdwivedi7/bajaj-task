@@ -83,14 +83,12 @@ public class WorkflowService {
 
             log.info("Parsed webhookUrl={}, accessTokenPresent={}", webhookUrl, accessToken != null && !accessToken.isBlank());
 
-            // Attempt to determine question assignment based on regNo last two digits
             int lastTwo = -1;
             try {
                 String s = regNo.replaceAll("\\D", "");
                 if (s.length() >= 2) {
                     lastTwo = Integer.parseInt(s.substring(s.length() - 2));
                 } else {
-                    // if regNo ends with non-digits fallback: look at last two characters' char codes
                     String tail = regNo.length() >= 2 ? regNo.substring(regNo.length()-2) : regNo;
                     lastTwo = tail.chars().sum();
                 }
@@ -100,8 +98,6 @@ public class WorkflowService {
             boolean isOdd = (lastTwo % 2) != 0;
             log.info("Determined regNo last two digits = {}, odd={}", lastTwo, isOdd);
 
-            // The PDF references two Drive links. We cannot fetch them without permissions; check the response or provide instructions.
-            // If server returned a question URL in generateResponse, try to fetch it:
             String questionText = null;
             if (generateResponse.getQuestionUrl() != null) {
                 String questionUrl = generateResponse.getQuestionUrl();
@@ -114,7 +110,6 @@ public class WorkflowService {
 
             if (questionText == null) {
                 log.info("No question text available from response. You must manually open the drive links from the PDF and implement SQL.");
-                // Optionally attempt to fetch based on isOdd selection: (URLs from PDF)
                 if (isOdd) {
                     log.info("Question assigned is Question 1 (odd regNo) — use Drive link from the PDF.");
                 } else {
@@ -122,11 +117,9 @@ public class WorkflowService {
                 }
             }
 
-            // Solve the SQL problem (placeholder).
             String finalSql = SqlSolver.solveFromQuestionText(questionText, regNo);
             log.info("Computed final SQL (placeholder):\n{}", finalSql);
 
-            // Submit the solution to the webhook URL using JWT in Authorization header
             submitFinalQuery(webhookUrl, accessToken, finalSql);
 
         } catch (Exception ex) {
@@ -148,11 +141,7 @@ public class WorkflowService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         if (accessToken != null && !accessToken.isBlank()) {
-            // The PDF says use JWT in Authorization header. Usually format: "Authorization: <accessToken>".
-            // Many APIs expect "Authorization: Bearer <token>" — check what the test expects. Here we set both common variants:
             headers.set("Authorization", "Bearer " + accessToken);
-            // also set plain token header in addition (comment/uncomment as needed)
-            // headers.set("Authorization", accessToken);
         }
 
         HttpEntity<FinalQueryRequest> entity = new HttpEntity<>(queryReq, headers);
