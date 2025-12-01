@@ -1,0 +1,11 @@
+bfh:
+  generate-url: "https://bfhldevapigw.healthrx.co.in/hiring/generateWebhook/JAVA"
+  submit-url: "https://bfhldevapigw.healthrx.co.in/hiring/testWebhook/JAVA"
+  name: "SATYAM DWIVEDI"
+  regNo: "22BCE3770"
+  email: "satyamdwivedi419@gmail.com"
+
+
+rest:
+  connect-timeout-ms: 5000
+  read-timeout-ms: 10000
